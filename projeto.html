@@ -4,45 +4,50 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Projeto — Irllan.dev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="nav">
-    <div class="nav-left">
-      <a class="brand" href="/">Irllan.dev<span class="accent">.</span></a>
-      <nav class="main-nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">Irllan.dev<span class="dot">.</span></a>
+      <nav class="links">
         <a href="/">Home</a>
         <a href="index.html#projects">Projetos</a>
         <a href="comentarios.html">Comentários</a>
         <a href="sobre.html">Sobre</a>
       </nav>
-    </div>
-    <div class="nav-right">
-      <button id="themeToggle" aria-label="Trocar tema" class="icon-btn">🌙</button>
-      <button id="authBtn" class="auth-btn">Entrar</button>
-      <button id="profileBtn" class="profile-btn"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil" /></button>
+      <div class="actions">
+        <button id="themeToggle" class="icon">🌙</button>
+        <button id="authBtn" class="auth">Entrar</button>
+        <button id="profileBtn" class="avatar"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil"></button>
+      </div>
     </div>
   </header>
 
   <main class="page project-page">
-    <div class="project-container">
-      <div class="project-left">
-        <h1 id="projTitle">Título do Projeto</h1>
-        <p id="projShort" class="muted">Resumo curto</p>
-        <div id="projContent"></div>
-        <div class="project-meta">
+    <div class="container project-wrap">
+      <article class="project-main">
+        <h1 id="projTitle">— Carregando —</h1>
+        <p id="projShort" class="muted">Resumo</p>
+        <div id="projContent" class="proj-content"></div>
+
+        <div class="project-actions">
           <a id="projOpen" class="btn ghost" href="#" target="_blank">Abrir projeto</a>
           <button id="openComment" class="btn primary">Comentar</button>
         </div>
+
         <hr/>
         <h3>Comentários</h3>
         <div id="projectComments" class="comments-list"></div>
-      </div>
+      </article>
 
-      <aside class="project-right">
+      <aside class="project-aside">
         <div id="projBanner" class="proj-banner"></div>
+        <div class="meta card">
+          <div><strong>Detalhes</strong></div>
+          <div id="projDate" class="muted small"></div>
+        </div>
       </aside>
     </div>
   </main>

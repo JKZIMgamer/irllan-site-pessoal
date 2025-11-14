@@ -5,77 +5,77 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Irllan.dev — Portfólio</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Fontes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
-  <!-- GSAP (opt) -->
+  <!-- GSAP -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="nav">
-    <div class="nav-left">
-      <a class="brand" href="/">Irllan.dev<span class="accent">.</span></a>
-      <nav class="main-nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">Irllan.dev<span class="dot">.</span></a>
+      <nav class="links">
         <a href="/">Home</a>
         <a href="index.html#projects">Projetos</a>
         <a href="comentarios.html">Comentários</a>
         <a href="sobre.html">Sobre</a>
         <a href="contato.html">Contato</a>
       </nav>
-    </div>
-    <div class="nav-right">
-      <button id="themeToggle" aria-label="Trocar tema" class="icon-btn">🌙</button>
-      <button id="authBtn" class="auth-btn">Entrar</button>
-      <button id="profileBtn" class="profile-btn" title="Perfil">
-        <img id="navAvatar" src="foto-perfil.jpg" alt="perfil" />
-      </button>
+      <div class="actions">
+        <button id="themeToggle" class="icon">🌙</button>
+        <button id="authBtn" class="auth">Entrar</button>
+        <button id="profileBtn" class="avatar"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil"></button>
+      </div>
     </div>
   </header>
 
-  <main class="page" id="home">
+  <main id="main">
     <section class="hero">
-      <div class="hero-left">
-        <h1>Olá — eu sou <span class="hl">Irllan</span></h1>
-        <p class="sub">Desenvolvedor, criador de bots e automações. Meu portfólio com projetos selecionados — limpo, rápido e profissional.</p>
-        <div class="hero-actions">
+      <div class="hero-content">
+        <h1 class="title">Olá — eu sou <span class="name">Irllan</span></h1>
+        <p class="lead">Desenvolvedor, criador de bots e automações. Portfólio com projetos selecionados — limpo, rápido e profissional.</p>
+        <div class="hero-cta">
           <a class="btn primary" href="#projects">Ver Projetos</a>
+          <a class="btn ghost" href="sobre.html">Sobre mim</a>
         </div>
+        <div class="trust">Ainda estudante • Focado em jogos, automação e cibersegurança</div>
       </div>
 
-      <div class="hero-right">
-        <div class="hero-mock">
-          <div class="mock-inner">
-            <div class="mock-title">Projetos em destaque</div>
-            <div class="mock-cards">
-              <!-- small preview placeholders -->
-            </div>
-          </div>
+      <div class="hero-mock">
+        <div class="mock-card">
+          <div class="mock-title">Projetos em destaque</div>
+          <div class="mock-grid" id="mockGrid"></div>
         </div>
       </div>
     </section>
 
-    <section id="projects" class="projects-section">
+    <section id="projects" class="projects">
       <div class="section-head">
         <h2>Projetos</h2>
-        <p class="muted">Projetos selecionados — adicionados manualmente pelo criador.</p>
+        <p class="muted">Projetos selecionados — adicionados manualmente.</p>
       </div>
+      <div id="projectsGrid" class="grid"></div>
+    </section>
 
-      <div id="projectsGrid" class="grid">
-        <!-- cards via JS -->
+    <section class="bottom-cta">
+      <div class="card glass">
+        <h3>Quer colaborar ou contratar?</h3>
+        <p>Me manda um email ou adiciona no Discord. Vamos conversar sobre o projeto.</p>
+        <div><a href="contato.html" class="btn primary">Contato</a></div>
       </div>
     </section>
 
-    <section id="contact" class="contact-section">
-      <h3>Contato</h3>
-      <p>Discord: Irllan#xxxx • GitHub: JKZIMgamer • Email: jkplass21@gmail.com</p>
-    </section>
+    <footer class="site-footer">
+      <div>© <strong>Irllan.dev</strong> — Feito por Irllan</div>
+      <div class="socials">Discord • GitHub • Email</div>
+    </footer>
   </main>
 
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
-
   <script src="script.js" defer></script>
 </body>
 </html>

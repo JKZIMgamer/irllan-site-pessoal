@@ -4,34 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Comentários — Irllan.dev</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="nav">
-    <div class="nav-left">
-      <a class="brand" href="/">Irllan.dev<span class="accent">.</span></a>
-      <nav class="main-nav">
+    <div class="nav-inner">
+      <a class="brand" href="/">Irllan.dev<span class="dot">.</span></a>
+      <nav class="links">
         <a href="/">Home</a>
         <a href="index.html#projects">Projetos</a>
         <a href="comentarios.html">Comentários</a>
         <a href="sobre.html">Sobre</a>
       </nav>
-    </div>
-    <div class="nav-right">
-      <button id="themeToggle" aria-label="Trocar tema" class="icon-btn">🌙</button>
-      <button id="authBtn" class="auth-btn">Entrar</button>
-      <button id="profileBtn" class="profile-btn"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil" /></button>
+      <div class="actions">
+        <button id="themeToggle" class="icon">🌙</button>
+        <button id="authBtn" class="auth">Entrar</button>
+        <button id="profileBtn" class="avatar"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil"></button>
+      </div>
     </div>
   </header>
 
   <main class="page comments-page">
-    <section class="comments-section">
-      <h2>Comentários Recentes</h2>
-      <div id="commentsList" class="comments-list">
-        <!-- preenchido por JS -->
-      </div>
-    </section>
+    <div class="container">
+      <h2>Comentários recentes</h2>
+      <div id="commentsList" class="comments-list"></div>
+    </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
