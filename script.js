@@ -1,213 +1,214 @@
-// ---- CONFIGURE AQUI ----
-const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";    // <-- coloca teu project url
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhnbm9uaXVqeGVrcWF4dXNoeGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5OTE2MDMsImV4cCI6MjA3ODU2NzYwM30._lF-lT4BEzq7_RNbicg-kY0cMtL7fxAsctsXh_DFQKo";          // <-- coloca a anon key
-const STORAGE_ENABLED = true; // true = upload para Supabase Storage; false = usa apenas URL do banner
-// -------------------------
-
-// Init supabase
+// ------------------- Supabase config (já inserido) -------------------
+const SUPABASE_URL = "https://hgnoniujxekqaxushxlh.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhnbm9uaXVqeGVrcWF4dXNoeGxoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5OTE2MDMsImV4cCI6MjA3ODU2NzYwM30._lF-lT4BEzq7_RNbicg-kY0cMtL7fxAsctsXh_DFQKo";
+// init supabase
 const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Helpers DOM
+// ---- shared DOM elements (present on all pages) ----
+const authBtn = document.getElementById('authBtn');
 const profileBtn = document.getElementById('profileBtn');
-const profileMenu = document.getElementById('profileMenu');
-const modal = document.getElementById('modal');
-const openAddProject = document.getElementById('openAddProject');
-const closeModal = document.getElementById('closeModal');
-const cancelBtn = document.getElementById('cancelBtn');
-const submitProject = document.getElementById('submitProject');
+const navAvatar = document.getElementById('navAvatar');
+const themeToggle = document.getElementById('themeToggle');
 
-const projectForm = document.getElementById('projectForm');
-const bannerFile = document.getElementById('bannerFile');
-const bannerURL = document.getElementById('bannerURL');
-const projectName = document.getElementById('projectName');
-const projectLink = document.getElementById('projectLink');
-const formStatus = document.getElementById('formStatus');
+let currentUser = null;
 
-const projectsGrid = document.getElementById('projectsGrid');
-const addProjectBtn = document.getElementById('addProjectBtn');
-
-// UI interactions
-profileBtn.addEventListener('click', (e) => {
-  profileMenu.classList.toggle('hidden');
+// Theme toggle
+themeToggle?.addEventListener('click', () => {
+  const root = document.documentElement;
+  const bg = getComputedStyle(root).getPropertyValue('--bg');
+  if(root.dataset.dark === "false"){
+    root.dataset.dark = "true";
+    root.style.setProperty('--bg','linear-gradient(180deg,#ffffff 0%, #f5f7fb 100%)');
+    root.style.setProperty('--text','#061220');
+  } else {
+    root.dataset.dark = "false";
+    root.style.setProperty('--bg','linear-gradient(180deg,#07102b 0%, #0e1530 100%)');
+    root.style.setProperty('--text','#f5f7fb');
+  }
 });
 
-// modal open/close
-openAddProject.addEventListener('click', showModal);
-addProjectBtn.addEventListener('click', showModal);
-closeModal.addEventListener('click', hideModal);
-cancelBtn.addEventListener('click', hideModal);
-
-function showModal(){
-  modal.classList.remove('hidden');
-  modal.setAttribute('aria-hidden','false');
-  formStatus.textContent = '';
-  projectForm.reset();
-}
-function hideModal(){
-  modal.classList.add('hidden');
-  modal.setAttribute('aria-hidden','true');
-}
-
-// Utility: create project card
-function createCard(item){
-  const div = document.createElement('div');
-  div.className = 'card';
-  const thumb = document.createElement('div');
-  thumb.className = 'thumb';
-  thumb.style.backgroundImage = `url('${item.banner_url || 'https://via.placeholder.com/800x400?text=No+Banner'}')`;
-  const h4 = document.createElement('h4');
-  h4.textContent = item.name;
-  const p = document.createElement('p');
-  p.textContent = item.url || '';
-  if(item.url){
-    const a = document.createElement('a');
-    a.href = item.url;
-    a.textContent = 'Abrir';
-    a.target = '_blank';
-    a.style.display = 'inline-block';
-    a.style.marginTop = '8px';
-    a.className = 'btn ghost';
-    div.appendChild(thumb);
-    div.appendChild(h4);
-    div.appendChild(p);
-    div.appendChild(a);
+// Auth button
+authBtn?.addEventListener('click', async () => {
+  if(!currentUser){
+    // start Google auth
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
   } else {
-    div.appendChild(thumb);
-    div.appendChild(h4);
-    div.appendChild(p);
+    await supabase.auth.signOut();
+    location.reload();
   }
+});
+
+// Update UI on auth state change
+supabase.auth.onAuthStateChange((event, session) => {
+  if(session?.user){
+    currentUser = session.user;
+    authBtn.textContent = 'Sair';
+    const avatar = session.user.user_metadata?.avatar_url || 'foto-perfil.jpg';
+    navAvatar.src = avatar;
+  } else {
+    currentUser = null;
+    authBtn.textContent = 'Entrar';
+    navAvatar.src = 'foto-perfil.jpg';
+  }
+});
+
+// ---------------- PAGE-SPECIFIC LOGIC ----------------
+
+// Helper: fetch projects and render cards (index.html)
+async function loadProjects(){
+  const grid = document.getElementById('projectsGrid');
+  if(!grid) return;
+  const { data, error } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+  if(error){ console.error(error); grid.innerHTML = '<p class="muted">Erro ao carregar projetos.</p>'; return; }
+  grid.innerHTML = '';
+  data.forEach(p => grid.appendChild(projectCard(p)));
+}
+
+// create project card element
+function projectCard(p){
+  const div = document.createElement('div'); div.className = 'card';
+  const thumb = document.createElement('div'); thumb.className = 'thumb';
+  thumb.style.backgroundImage = `url('${p.banner_url || 'https://via.placeholder.com/800x400?text=No+Banner'}')`;
+  const h4 = document.createElement('h4'); h4.textContent = p.name;
+  const pdesc = document.createElement('p'); pdesc.textContent = p.short || (p.content ? p.content.substring(0,120)+'...' : '');
+  const meta = document.createElement('div'); meta.className = 'meta';
+  const open = document.createElement('a'); open.href = `projeto.html?id=${p.id}`; open.textContent = 'Abrir'; open.className = 'btn ghost';
+  const visit = document.createElement('a'); visit.href = p.url || '#'; visit.textContent = 'Visitar'; visit.className = 'btn ghost'; visit.target='_blank';
+  meta.appendChild(open); meta.appendChild(visit);
+  div.appendChild(thumb); div.appendChild(h4); div.appendChild(pdesc); div.appendChild(meta);
   return div;
 }
 
-// Load existing projects (initial)
-async function loadProjects(){
-  try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('created_at', { ascending: false });
+// ---------------- project page logic ----------------
+async function loadProjectPage(){
+  const elId = new URLSearchParams(location.search).get('id');
+  if(!elId) return;
+  // fetch project
+  const { data, error } = await supabase.from('projects').select('*').eq('id', elId).limit(1).maybeSingle();
+  if(error || !data){ console.error(error); return; }
+  document.getElementById('projTitle').textContent = data.name;
+  document.getElementById('projShort').textContent = data.short || '';
+  document.getElementById('projContent').innerHTML = (data.content || '').replace(/\n/g, '<br/>');
+  document.getElementById('projOpen').href = data.url || '#';
+  document.getElementById('projBanner').style.backgroundImage = `url('${data.banner_url || 'https://via.placeholder.com/1200x600?text=No+Banner'}')`;
 
-    if(error) { console.error(error); return; }
-    projectsGrid.innerHTML = '';
-    data.forEach(it => {
-      projectsGrid.appendChild(createCard(it));
-    });
-  } catch(err){
-    console.error(err);
-  }
+  // load comments for this project
+  loadCommentsForProject(elId);
+
+  // comment modal controls
+  const openComment = document.getElementById('openComment');
+  const commentModal = document.getElementById('commentModal');
+  const closeCommentModal = document.getElementById('closeCommentModal');
+  const sendComment = document.getElementById('sendComment');
+  const commentText = document.getElementById('commentText');
+  const commentStatus = document.getElementById('commentStatus');
+
+  openComment?.addEventListener('click', () => {
+    if(!currentUser){ alert('Você precisa entrar para comentar.'); return; }
+    commentModal.classList.remove('hidden');
+    commentText.value = '';
+    commentStatus.textContent = '';
+  });
+  closeCommentModal?.addEventListener('click', () => commentModal.classList.add('hidden'));
+
+  sendComment?.addEventListener('click', async () => {
+    if(!currentUser){ commentStatus.textContent = 'Você precisa entrar.'; return; }
+    const text = commentText.value.trim();
+    if(!text){ commentStatus.textContent = 'Escreva algo.'; return; }
+    commentStatus.textContent = 'Enviando...'; sendComment.disabled = true;
+    try {
+      const { error } = await supabase.from('comments').insert([{
+        project_id: parseInt(elId),
+        user_id: currentUser.id,
+        username: currentUser.user_metadata?.full_name || currentUser.email,
+        avatar_url: currentUser.user_metadata?.avatar_url || null,
+        content: text
+      }]);
+      if(error) throw error;
+      commentStatus.textContent = 'Enviado!';
+      setTimeout(()=> commentModal.classList.add('hidden'), 700);
+    } catch(err){
+      console.error(err); commentStatus.textContent = 'Erro ao enviar.';
+    } finally { sendComment.disabled = false; }
+  });
 }
 
-// Realtime subscription (inserts)
+// load comments for project
+async function loadCommentsForProject(projectId){
+  const list = document.getElementById('projectComments');
+  if(!list) return;
+  const { data, error } = await supabase.from('comments').select('*').eq('project_id', projectId).order('created_at', { ascending: false }).limit(200);
+  if(error){ console.error(error); list.innerHTML = '<p class="muted">Erro ao carregar comentários.</p>'; return; }
+  list.innerHTML = '';
+  data.forEach(c => {
+    const el = document.createElement('div'); el.className='comment';
+    const img = document.createElement('img'); img.src = c.avatar_url || 'foto-perfil.jpg';
+    const body = document.createElement('div');
+    const who = document.createElement('strong'); who.textContent = c.username || 'Usuário';
+    const when = document.createElement('div'); when.className = 'muted small'; when.textContent = new Date(c.created_at).toLocaleString();
+    const cont = document.createElement('div'); cont.textContent = c.content;
+    body.appendChild(who); body.appendChild(when); body.appendChild(cont);
+    el.appendChild(img); el.appendChild(body);
+    list.appendChild(el);
+  });
+}
+
+// ---------------- comments page logic ----------------
+async function loadCommentsPage(){
+  const list = document.getElementById('commentsList');
+  if(!list) return;
+  const { data, error } = await supabase.from('comments').select('*, projects(id,name)').order('created_at', { ascending: false }).limit(200);
+  if(error){ console.error(error); list.innerHTML = '<p class="muted">Erro ao carregar comentários.</p>'; return; }
+  list.innerHTML = '';
+  data.forEach(c => {
+    const el = document.createElement('div'); el.className='comment';
+    const img = document.createElement('img'); img.src = c.avatar_url || 'foto-perfil.jpg';
+    const body = document.createElement('div');
+    const who = document.createElement('strong'); who.textContent = c.username || 'Usuário';
+    const meta = document.createElement('div'); meta.className='muted small'; meta.textContent = `${new Date(c.created_at).toLocaleString()} • Projeto: ${c.projects?.name || '—'}`;
+    const cont = document.createElement('div'); cont.textContent = c.content;
+    body.appendChild(who); body.appendChild(meta); body.appendChild(cont);
+    el.appendChild(img); el.appendChild(body);
+    list.appendChild(el);
+  });
+}
+
+// ---------------- realtime subscriptions ----------------
 function subscribeRealtime(){
-  supabase.channel('projects-ch')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'projects' }, payload => {
-      // prepend new project
-      const newItem = payload.new;
-      projectsGrid.prepend(createCard(newItem));
+  // watch projects changes to update index
+  supabase.channel('projects-channel')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, payload => {
+      loadProjects();
     })
-    .subscribe()
-    .catch(e => console.warn('Realtime subscribe failed', e));
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'comments' }, payload => {
+      // if on project page, refresh comments for that project
+      const params = new URLSearchParams(location.search);
+      const id = params.get('id');
+      if(id && payload?.new?.project_id === Number(id)) loadCommentsForProject(id);
+      // if on comments page reload global list
+      if(location.pathname.endsWith('comentarios.html')) loadCommentsPage();
+    })
+    .subscribe();
 }
 
-// Upload helper (Supabase Storage) -> returns public url
-async function uploadBannerGetURL(file){
-  if(!STORAGE_ENABLED) return null;
-  const fileExt = file.name.split('.').pop();
-  const fileName = `banners/${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
-  // create bucket 'public' or use default - you'll need to create a bucket named 'banners' via Supabase UI
-  // here we assume bucket is 'banners' and is public
-  const { data, error } = await supabase.storage
-    .from('banners')
-    .upload(fileName, file, { cacheControl: '3600', upsert: false });
-
-  if(error){
-    console.error('Storage upload error', error);
-    throw error;
-  }
-  // get public URL
-  const { data: urlData } = supabase.storage.from('banners').getPublicUrl(fileName);
-  return urlData.publicUrl;
-}
-
-// Handle submit
-submitProject.addEventListener('click', async () => {
-  formStatus.textContent = 'Enviando...';
-  submitProject.disabled = true;
-
-  try {
-    let banner_final = bannerURL.value?.trim() || null;
-
-    // If file provided => upload if enabled, otherwise ignore
-    if(bannerFile.files && bannerFile.files.length > 0){
-      if(STORAGE_ENABLED){
-        const publicUrl = await uploadBannerGetURL(bannerFile.files[0]);
-        banner_final = publicUrl;
-      } else {
-        // if storage disabled but file selected, show message
-        formStatus.textContent = 'Upload de arquivo desativado. Use a URL do banner ou habilite o storage.';
-        submitProject.disabled = false;
-        return;
-      }
-    }
-
-    const nameVal = projectName.value.trim();
-    const urlVal = projectLink.value.trim() || null;
-    if(!nameVal){ formStatus.textContent = 'Informe o nome do projeto.'; submitProject.disabled=false; return; }
-
-    // insert into supabase
-    const { data, error } = await supabase
-      .from('projects')
-      .insert([{ name: nameVal, url: urlVal, banner_url: banner_final }]);
-
-    if(error){ throw error; }
-
-    formStatus.textContent = 'Projeto adicionado com sucesso!';
-    // close modal after a short delay
-    setTimeout(()=>{ hideModal(); }, 800);
-  } catch(err){
-    console.error(err);
-    formStatus.textContent = 'Erro ao enviar. Veja o console.';
-  } finally {
-    submitProject.disabled = false;
-  }
-});
-
-// theme toggler (simple)
-const themeToggle = document.getElementById('themeToggle');
-let dark = true;
-themeToggle.addEventListener('click', () => {
-  dark = !dark;
-  if(dark){
-    document.documentElement.style.setProperty('--bg','#0e0f14');
-    document.documentElement.style.setProperty('--text','#e9eef7');
-    themeToggle.textContent = '🌙';
-  } else {
-    document.documentElement.style.setProperty('--bg','#f6f8fb');
-    document.documentElement.style.setProperty('--text','#0b1220');
-    themeToggle.textContent = '☀️';
-  }
-});
-
-// Init
+// ---------------- init ----------------
 (async function init(){
-  // quick check keys
-  if(SUPABASE_URL.includes('YOUR-PROJECT') || SUPABASE_ANON_KEY.includes('YOUR_ANON')){
-    console.warn('Supabase: substitua SUPABASE_URL e SUPABASE_ANON_KEY no script.js antes de usar.');
-    // still allow offline demo
-    loadDemoLocal();
-    return;
+  // update auth UI
+  const session = await supabase.auth.getSession();
+  if(session?.data?.session?.user){
+    currentUser = session.data.session.user;
+    authBtn && (authBtn.textContent = 'Sair');
+    navAvatar && (navAvatar.src = currentUser.user_metadata?.avatar_url || 'foto-perfil.jpg');
+  } else {
+    authBtn && (authBtn.textContent = 'Entrar');
+    navAvatar && (navAvatar.src = 'foto-perfil.jpg');
   }
 
-  await loadProjects();
+  // run page specific loaders
+  if(document.getElementById('projectsGrid')) await loadProjects();
+  if(document.querySelector('.project-page')) await loadProjectPage();
+  if(document.querySelector('.comments-page')) await loadCommentsPage();
+
+  // subscribe realtime updates
   subscribeRealtime();
 })();
-
-function loadDemoLocal(){
-  // fallback demo content while you configure Supabase
-  const demo = [
-    { id:1, name:'Lzim BOT', url:'https://lzimbot.pages.dev', banner_url:'https://via.placeholder.com/800x400?text=Lzim+BOT' },
-    { id:2, name:'Bolinha de Ouro', url:'#', banner_url:'https://via.placeholder.com/800x400?text=Bolinha' },
-  ];
-  projectsGrid.innerHTML='';
-  demo.forEach(it => projectsGrid.appendChild(createCard(it)));
-}

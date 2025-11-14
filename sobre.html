@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sobre — Irllan.dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-left">
+      <a class="brand" href="/">Irllan.dev<span class="accent">.</span></a>
+      <nav class="main-nav">
+        <a href="/">Home</a>
+        <a href="index.html#projects">Projetos</a>
+        <a href="comentarios.html">Comentários</a>
+        <a href="sobre.html">Sobre</a>
+      </nav>
+    </div>
+    <div class="nav-right">
+      <button id="themeToggle" aria-label="Trocar tema" class="icon-btn">🌙</button>
+      <button id="authBtn" class="auth-btn">Entrar</button>
+      <button id="profileBtn" class="profile-btn"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil" /></button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero" style="padding:32px;">
+      <div class="hero-left">
+        <h1>Sobre mim</h1>
+        <p class="sub">Sou estudante do ensino médio, programador, interessado em cibersegurança, automações e desenvolvimento de jogos. Gosto de criar bots e experimentar com IA e pipelines.</p>
+        <p class="sub">Objetivo: desenvolver jogos e sites profissionais, contribuir com projetos e automatizar processos úteis.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

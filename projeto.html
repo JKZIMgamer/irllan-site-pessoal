@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Projeto — Irllan.dev</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-left">
+      <a class="brand" href="/">Irllan.dev<span class="accent">.</span></a>
+      <nav class="main-nav">
+        <a href="/">Home</a>
+        <a href="index.html#projects">Projetos</a>
+        <a href="comentarios.html">Comentários</a>
+        <a href="sobre.html">Sobre</a>
+      </nav>
+    </div>
+    <div class="nav-right">
+      <button id="themeToggle" aria-label="Trocar tema" class="icon-btn">🌙</button>
+      <button id="authBtn" class="auth-btn">Entrar</button>
+      <button id="profileBtn" class="profile-btn"><img id="navAvatar" src="foto-perfil.jpg" alt="perfil" /></button>
+    </div>
+  </header>
+
+  <main class="page project-page">
+    <div class="project-container">
+      <div class="project-left">
+        <h1 id="projTitle">Título do Projeto</h1>
+        <p id="projShort" class="muted">Resumo curto</p>
+        <div id="projContent"></div>
+        <div class="project-meta">
+          <a id="projOpen" class="btn ghost" href="#" target="_blank">Abrir projeto</a>
+          <button id="openComment" class="btn primary">Comentar</button>
+        </div>
+        <hr/>
+        <h3>Comentários</h3>
+        <div id="projectComments" class="comments-list"></div>
+      </div>
+
+      <aside class="project-right">
+        <div id="projBanner" class="proj-banner"></div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- modal comentar -->
+  <div id="commentModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h4>Adicionar comentário</h4>
+        <button id="closeCommentModal" class="icon-btn">✕</button>
+      </header>
+      <div class="modal-body">
+        <textarea id="commentText" rows="5" placeholder="Seu comentário..."></textarea>
+        <div class="modal-actions">
+          <button id="sendComment" class="btn primary">Enviar</button>
+        </div>
+        <div id="commentStatus" class="muted small"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>
